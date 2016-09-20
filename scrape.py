@@ -12,7 +12,7 @@ def find_download(id, session_requests):
 	return False
 
 specimen_numbers = [171063, 284782, 290601, 211460, 211465]
-save_dir = 'savedir'
+save_dir = '/Users/Moocow/Documents/Code/morphosource-scrape'
 
 session_requests = requests.session()
 
@@ -43,11 +43,17 @@ if len(specimen_ids_no_downloads) > 0:
 
 # Logging in
 login_url = 'http://www.morphosource.org/LoginReg/login'
-headers = {'Origin': 'http://www.morphosource.org', 
-		   'Referer': 'http://www.morphosource.org/LoginReg/form'}
+headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 data = 'username=' + user.username +'&password=' + user.password
 
 login_result = session_requests.post(login_url, headers = headers, data = data)
 
+# Downloading files
+for specimen in specimen_links:
+	print 'Downloading file for specimen ID ' + str(specimen['id'])
+	file_result = session_requests.get(specimen['download'])
+	file = open(str(specimen['id'])+'.zip', 'wb')
+	file.write(file_result.content)
+	file.close()
 
-
+print 'File downloads finished'
