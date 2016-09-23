@@ -1,6 +1,7 @@
 import requests
+import os
+import csv
 import user
-from lxml import html
 
 def find_download(id, session_requests):
 	response = session_requests.get(query_url+str(id))
@@ -11,35 +12,43 @@ def find_download(id, session_requests):
 				return media['download']
 	return False
 
-specimen_numbers = [171063, 284782, 290601, 211460, 211465]
-save_dir = '/Users/Moocow/Documents/Code/morphosource-scrape'
+# Getting specimen numbers
+with open('C:\Code\morphosource-scrape\specimen_numbers.csv', 'r') as csvfile:
+	reader = csv.reader(csvfile)
+	full_list = list(reader)
+	flat_list = [item for sublist in full_list[1:] for item in sublist]
+	specimen_numbers = [''.join(filter(str.isdigit, x)) for x in flat_list]
+# Alternately...
+# specimen_numbers = [171063, 284782, 290601, 211460, 211465]
 
+
+
+save_dir = 'C:/Code/morphosource-scrape/files'
 session_requests = requests.session()
 
 # Scraping
-
 query_url = 'http://www.morphosource.org/api/v1/find/media?q=specimen.catalog_number:'
 
 specimen_links = []
 specimen_ids_no_downloads = []
 
-print 'Beginning scraping for download links'
+print('Beginning scraping for download links')
 
 for id in specimen_numbers:
-	print 'Scraping for specimen ID ' + str(id)
+	print('Scraping for specimen ID ' + str(id))
 	download = find_download(id, session_requests)
 	if download == False:
 		specimen_ids_no_downloads.append(id)
-		print "No 'Raw Surface/Cropped' link found for specimen ID " + str(id)
+		print("No 'Raw Surface/Cropped' link found for specimen ID " + str(id))
 	else:
 		specimen_links.append({'id': id, 'download': download})
-		print "'Raw Surface/Cropped' link found for specimen ID " + str(id)
+		print("'Raw Surface/Cropped' link found for specimen ID " + str(id))
 
-print 'Finished scraping for download links\nFound ' + str(len(specimen_links)) + ' links.'
+print('Finished scraping for download links\nFound ' + str(len(specimen_links)) + ' links.')
 
 if len(specimen_ids_no_downloads) > 0:
-	print 'Download links were not found for the following specimens'
-	print specimen_ids_no_downloads 
+	print('Download links were not found for the following specimens')
+	print(specimen_ids_no_downloads )
 
 # Logging in
 login_url = 'http://www.morphosource.org/LoginReg/login'
@@ -50,10 +59,10 @@ login_result = session_requests.post(login_url, headers = headers, data = data)
 
 # Downloading files
 for specimen in specimen_links:
-	print 'Downloading file for specimen ID ' + str(specimen['id'])
+	print('Downloading file for specimen ID ' + str(specimen['id']))
 	file_result = session_requests.get(specimen['download'])
-	file = open(str(specimen['id'])+'.zip', 'wb')
+	file = open(os.path.join(save_dir, str(specimen['id'])+'.zip'), 'wb')
 	file.write(file_result.content)
 	file.close()
 
-print 'File downloads finished'
+print('File downloads finished')
