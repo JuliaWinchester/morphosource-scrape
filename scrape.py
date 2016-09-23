@@ -1,3 +1,16 @@
+'''
+Created on Sep 19, 2016
+
+This script automates batch downloads of PLY media from www.morphosource.org. It
+requires a separate user.py module placed in the same directory as scrape.py. 
+The user.py module should define variables 'username' and 'password' for 
+MorphoSource access. Specimens are identified by specimen number and only PLY
+media titled 'Raw/Surface Cropped' are downloaded, but with some customization
+the basic protocol of this script can serve as a guide for other situations 
+requiring batch media downloads from MorphoSource. 
+
+@author: Julie Winchester
+'''
 import requests
 import os
 import csv
