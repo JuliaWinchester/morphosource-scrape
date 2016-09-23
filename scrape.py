@@ -21,8 +21,6 @@ with open('C:\Code\morphosource-scrape\specimen_numbers.csv', 'r') as csvfile:
 # Alternately...
 # specimen_numbers = [171063, 284782, 290601, 211460, 211465]
 
-
-
 save_dir = 'C:/Code/morphosource-scrape/files'
 session_requests = requests.session()
 
